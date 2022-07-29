@@ -17,6 +17,8 @@
 
 package com.thebuzzmedia.exiftool.commons.lang;
 
+import java.util.Optional;
+
 /**
  * Static String Utilities.
  */
@@ -34,5 +36,19 @@ public final class Strings {
 	 */
 	public static boolean isNotEmpty(String value) {
 		return value != null && !value.isEmpty();
+	}
+
+
+	/**
+	 * Try to parse a string as an Integer and return the value if valid, or an Optional empty if not.
+	 * @param value The string to convert to an Integer
+	 * @return Optional Integer which will be poresent if valid, and empty if not.
+	 */
+	public static Optional<Integer> tryParseInt(String value) {
+		try {
+			return Optional.of(Integer.parseInt(value));
+		} catch (NumberFormatException e) {
+			return Optional.empty();
+		}
 	}
 }
