@@ -23,7 +23,7 @@
 
 	<groupId>com.github.mjeanroy</groupId>
 	<artifactId>exiftool-lib</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1-SNAPSHOT</version>
 	<name>exiftool</name>
 	<description>Java Wrapper for ExifTool</description>
 	<packaging>jar</packaging>
@@ -54,7 +54,7 @@
 		<connection>scm:git:git@github.com:mjeanroy/exiftool.git</connection>
 		<developerConnection>scm:git:git@github.com:mjeanroy/exiftool.git</developerConnection>
 		<url>https://github.com/mjeanroy/exiftool</url>
-	  <tag>exiftool-lib-3.0.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<distributionManagement>
