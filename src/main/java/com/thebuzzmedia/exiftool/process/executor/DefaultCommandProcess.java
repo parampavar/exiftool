@@ -26,6 +26,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static com.thebuzzmedia.exiftool.commons.io.IOs.readInputStream;
 import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
@@ -182,15 +184,32 @@ public class DefaultCommandProcess implements CommandProcess {
 		// Check valid input.
 		requireNonNull(input, "Write input should not be null");
 
+		// Extract the most appropriate charset, depends on the OS & the JVM.
+		Charset charset = guessCharset();
+
 		// Just log some debug information
-		log.debug("Send command input: {}", input);
+		log.debug("Send command input with charset {}: {}", charset, input);
 
 		try {
-			os.write(input.getBytes());
+			os.write(input.getBytes(charset));
 		}
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 			throw ex;
 		}
+	}
+
+	private Charset guessCharset() {
+		String nativeEncoding = System.getProperty("native.encoding");
+		if (nativeEncoding != null) {
+			return Charset.forName(nativeEncoding);
+		}
+
+		String fileEncoding = System.getProperty("file.encoding");
+		if (fileEncoding != null) {
+			return Charset.forName(fileEncoding);
+		}
+
+		return StandardCharsets.UTF_8;
 	}
 }
