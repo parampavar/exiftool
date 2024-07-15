@@ -51,9 +51,9 @@ jobs:
           cache: 'maven'
       - name: java -version
         run: java -version
-      - name: mvn -version
-        run: mvn -version
+      - name: ./mvnw -version
+        run: ./mvnw -version
       - name: Build
-        run: mvn -B install --file pom.xml -DskipTests
+        run: ./mvnw -B install --file pom.xml -DskipTests
       - name: Test
-        run: mvn verify
+        run: ./mvnw verify
