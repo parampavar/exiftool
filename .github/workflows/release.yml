@@ -29,10 +29,10 @@ on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: "Release version"
+        description: "Release version (X.Y.Z)"
         required: true
       developmentVersion:
-        description: "Snapshot version"
+        description: "Snapshot version (X.Y.Z without -SNAPSHOT suffix)"
         required: true
       dry_run:
         description: Run dry-run release
@@ -91,7 +91,7 @@ jobs:
             release:perform \
             -DdryRun=${{ inputs.dry_run }} \
             -DreleaseVersion=${{ github.event.inputs.releaseVersion }} \
-            -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }} \
+            -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}-SNAPSHOT \
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
