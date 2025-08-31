@@ -80,8 +80,17 @@ jobs:
 
           # Environment variable name for the GPG private key passphrase.
           gpg-passphrase: GPG_PASSPHRASE
-      - name: Configure Git User
+      - name: Configure Git
         run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_GIT_SIGNING_KEY }}" > ~/.ssh/signing_key
+          chmod 600 ~/.ssh/signing_key
+          ssh-keygen -y -f ~/.ssh/signing_key > ~/.ssh/signing_key.pub
+
+          git config --global gpg.format ssh
+          git config --global user.signingkey ~/.ssh/signing_key.pub
+          git config --global commit.gpgsign true
+          git config --global tag.gpgSign true
           git config user.email "mickael.jeanroy@gmail.com"
           git config user.name "Mickael Jeanroy"
       - name: Release
