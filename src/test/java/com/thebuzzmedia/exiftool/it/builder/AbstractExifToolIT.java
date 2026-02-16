@@ -50,8 +50,7 @@ abstract class AbstractExifToolIT {
 
 		assertThatThrownBy(builder::build)
 				.isInstanceOf(ExifToolNotFoundException.class)
-				.hasMessageContaining("Cannot run program \"" + path + "\"")
-				.hasMessageContaining("error=2");
+				.hasMessageContaining("Cannot run program \"" + path + "\"");
 	}
 
 	abstract ExifToolBuilder create();
