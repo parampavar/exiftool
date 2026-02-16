@@ -19,18 +19,23 @@ package com.thebuzzmedia.exiftool.core;
 
 import com.thebuzzmedia.exiftool.ExifToolOptions;
 import com.thebuzzmedia.exiftool.Format;
+import com.thebuzzmedia.exiftool.commons.lang.PreConditions;
 import com.thebuzzmedia.exiftool.commons.lang.ToStringBuilder;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import static com.thebuzzmedia.exiftool.commons.iterables.Collections.isNotEmpty;
+import static com.thebuzzmedia.exiftool.commons.iterables.Collections.size;
+import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notBlank;
+import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 import static com.thebuzzmedia.exiftool.commons.lang.Strings.isNotEmpty;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
@@ -89,7 +94,7 @@ public final class StandardOptions implements ExifToolOptions {
 	/**
 	 * Specify encoding for special characters.
 	 */
-	private final Charset charset;
+	private final List<String> charsets;
 
 	/**
 	 * Password for processing protected files.
@@ -175,7 +180,7 @@ public final class StandardOptions implements ExifToolOptions {
 	 * @param ignoreMinorErrors Ignore minor errors and warnings.
 	 * @param coordFormat Format for GPS coordinates.
 	 * @param dateFormat Format for date/time values.
-	 * @param charset Specify encoding for special characters.
+	 * @param charsets Specify encoding for special characters.
 	 * @param password Password for processing protected files.
 	 * @param modules Add features from plug-in module.
 	 * @param escapeHtml Escape values for HTML.
@@ -193,7 +198,7 @@ public final class StandardOptions implements ExifToolOptions {
 			boolean ignoreMinorErrors,
 			String coordFormat,
 			String dateFormat,
-			Charset charset,
+			Collection<String> charsets,
 			String password,
 			Collection<String> modules,
 			boolean escapeHtml,
@@ -204,13 +209,13 @@ public final class StandardOptions implements ExifToolOptions {
 			boolean extractUnknown,
 			boolean noCompositeTags,
 			OverwriteMode overwriteMode,
-			boolean useArgsFormat) {
-
+			boolean useArgsFormat
+	) {
 		this.format = format;
 		this.ignoreMinorErrors = ignoreMinorErrors;
 		this.coordFormat = coordFormat;
 		this.dateFormat = dateFormat;
-		this.charset = charset;
+		this.charsets = new ArrayList<>(charsets);
 		this.password = password;
 		this.modules = unmodifiableList(new ArrayList<>(modules));
 		this.escapeHtml = escapeHtml;
@@ -254,9 +259,9 @@ public final class StandardOptions implements ExifToolOptions {
 			arguments.add(coordFormat);
 		}
 
-		if (charset != null) {
+		for (String charset : charsets) {
 			arguments.add("-charset");
-			arguments.add(charset.displayName());
+			arguments.add(charset);
 		}
 
 		if (isNotEmpty(password)) {
@@ -341,12 +346,30 @@ public final class StandardOptions implements ExifToolOptions {
 	}
 
 	/**
-	 * Get {@link #charset}
+	 * Get {@link #charsets}
 	 *
-	 * @return {@link #charset}
+	 * @return {@link #charsets}
 	 */
+	public List<String> getCharsets() {
+		return unmodifiableList(charsets);
+	}
+
+	/**
+	 * Here for backward compatibility, will be removed
+	 * in the next major release.
+	 *
+	 * @return First valid Charset.
+	 * @deprecated Use {@link #getCharsets()} instead.
+	 */
+	@Deprecated
 	public Charset getCharset() {
-		return charset;
+		for (String charset : charsets) {
+			if (Charset.isSupported(charset)) {
+				return Charset.forName(charset);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -470,7 +493,7 @@ public final class StandardOptions implements ExifToolOptions {
 				.withIgnoreMinorErrors(ignoreMinorErrors)
 				.withCoordFormat(coordFormat)
 				.withDateFormat(dateFormat)
-				.withCharset(charset)
+				.withCharsets(charsets)
 				.withPassword(password)
 				.useModules(modules)
 				.withEscapeHtml(escapeHtml)
@@ -496,7 +519,7 @@ public final class StandardOptions implements ExifToolOptions {
 					&& Objects.equals(ignoreMinorErrors, opts.ignoreMinorErrors)
 					&& Objects.equals(coordFormat, opts.coordFormat)
 					&& Objects.equals(dateFormat, opts.dateFormat)
-					&& Objects.equals(charset, opts.charset)
+					&& Objects.equals(charsets, opts.charsets)
 					&& Objects.equals(password, opts.password)
 					&& Objects.equals(modules, opts.modules)
 					&& Objects.equals(escapeHtml, opts.escapeHtml)
@@ -520,7 +543,7 @@ public final class StandardOptions implements ExifToolOptions {
 				ignoreMinorErrors,
 				coordFormat,
 				dateFormat,
-				charset,
+				charsets,
 				password,
 				modules,
 				escapeHtml,
@@ -542,7 +565,7 @@ public final class StandardOptions implements ExifToolOptions {
 				.append("ignoreMinorErrors", ignoreMinorErrors)
 				.append("coordFormat", coordFormat)
 				.append("dateFormat", dateFormat)
-				.append("charset", charset)
+				.append("charsets", charsets)
 				.append("password", password)
 				.append("modules", modules)
 				.append("escapeHtml", escapeHtml)
@@ -593,9 +616,9 @@ public final class StandardOptions implements ExifToolOptions {
 		/**
 		 * Specify encoding for special characters.
 		 *
-		 * @see StandardOptions#charset
+		 * @see StandardOptions#charsets
 		 */
-		private Charset charset;
+		private final Set<String> charsets;
 
 		/**
 		 * Password for processing protected files.
@@ -677,7 +700,7 @@ public final class StandardOptions implements ExifToolOptions {
 			this.format = StandardFormat.HUMAN_READABLE;
 			this.coordFormat = null;
 			this.dateFormat = null;
-			this.charset = null;
+			this.charsets = new LinkedHashSet<>();
 			this.password = null;
 			this.modules = new LinkedHashSet<>();
 			this.escapeHtml = false;
@@ -736,13 +759,34 @@ public final class StandardOptions implements ExifToolOptions {
 		}
 
 		/**
-		 * Update {@link #charset}
+		 * Update {@link #charsets}
 		 *
-		 * @param charset New {@link #charset}
+		 * @param charset New {@link #charsets}
 		 * @return The builder.
 		 */
 		public Builder withCharset(Charset charset) {
-			this.charset = charset;
+			return withCharset(charset.displayName());
+		}
+
+		/**
+		 * Update {@link #charsets}
+		 *
+		 * @param charset New {@link #charsets}
+		 * @return The builder.
+		 */
+		public Builder withCharset(String charset) {
+			this.charsets.add(notBlank(charset, "charset must be set"));
+			return this;
+		}
+
+		/**
+		 * Update {@link #charsets}
+		 *
+		 * @param charsets New {@link #charsets}
+		 * @return The builder.
+		 */
+		public Builder withCharsets(Collection<String> charsets) {
+			this.charsets.addAll(charsets);
 			return this;
 		}
 
@@ -980,7 +1024,7 @@ public final class StandardOptions implements ExifToolOptions {
 					ignoreMinorErrors,
 					coordFormat,
 					dateFormat,
-					charset,
+					charsets,
 					password,
 					modules,
 					escapeHtml,
@@ -1032,12 +1076,30 @@ public final class StandardOptions implements ExifToolOptions {
 		}
 
 		/**
-		 * Get {@link #charset}
+		 * Get {@link #charsets}
 		 *
-		 * @return {@link #charset}
+		 * @return {@link #charsets}
 		 */
+		public Set<String> getCharsets() {
+			return unmodifiableSet(charsets);
+		}
+
+		/**
+		 * Here for backward compatibility, will be removed
+		 * in the next major release.
+		 *
+		 * @return First valid Charset.
+		 * @deprecated Use {@link #getCharsets()} instead.
+		 */
+		@Deprecated
 		public Charset getCharset() {
-			return charset;
+			for (String charset : charsets) {
+				if (Charset.isSupported(charset)) {
+					return Charset.forName(charset);
+				}
+			}
+
+			return null;
 		}
 
 		/**
@@ -1157,7 +1219,7 @@ public final class StandardOptions implements ExifToolOptions {
 					.append("ignoreMinorErrors", ignoreMinorErrors)
 					.append("coordFormat", coordFormat)
 					.append("dateFormat", dateFormat)
-					.append("charset", charset)
+					.append("charsets", charsets)
 					.append("password", password)
 					.append("modules", modules)
 					.append("escapeHtml", escapeHtml)

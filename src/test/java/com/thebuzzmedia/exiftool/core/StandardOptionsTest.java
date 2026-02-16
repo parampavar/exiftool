@@ -35,7 +35,7 @@ class StandardOptionsTest {
 
 		assertThat(opts).isNotNull();
 		assertThat(opts.getFormat()).isEqualTo(StandardFormat.HUMAN_READABLE);
-		assertThat(opts.getCharset()).isNull();
+		assertThat(opts.getCharsets()).isEmpty();
 		assertThat(opts.getPassword()).isNull();
 		assertThat(opts.getDateFormat()).isNull();
 		assertThat(opts.getCoordFormat()).isNull();
@@ -190,9 +190,35 @@ class StandardOptionsTest {
 				.build();
 
 		assertThat(opts).isNotNull();
-		assertThat(opts.getCharset()).isEqualTo(charset);
+		assertThat(opts.getCharsets()).hasSize(1).containsExactly(charset.displayName());
 		assertThat(opts.serialize()).hasSize(2).containsExactly("-charset", "UTF-8");
-		assertThat(opts.toBuilder().getCharset()).isEqualTo(charset);
+		assertThat(opts.toBuilder().getCharsets()).hasSize(1).containsExactly(charset.displayName());
+	}
+
+	@Test
+	void it_should_set_charsets() {
+		Charset ch1 = StandardCharsets.UTF_8;
+		String ch2 = "filename=" + StandardCharsets.UTF_8.displayName();
+		StandardOptions opts = StandardOptions.builder()
+			.withCharset(ch1)
+			.withCharset(ch2)
+			.build();
+
+		assertThat(opts).isNotNull();
+		assertThat(opts.getCharsets()).hasSize(2).containsExactly(
+			ch1.displayName(),
+			ch2
+		);
+
+		assertThat(opts.serialize()).hasSize(4).containsExactly(
+			"-charset", ch1.displayName(),
+			"-charset", ch2
+		);
+
+		assertThat(opts.toBuilder().getCharsets()).hasSize(2).containsExactly(
+			ch1.displayName(),
+			ch2
+		);
 	}
 
 	@Test
@@ -353,7 +379,7 @@ class StandardOptionsTest {
 						"ignoreMinorErrors: false, " +
 						"coordFormat: null, " +
 						"dateFormat: null, " +
-						"charset: null, " +
+						"charsets: [], " +
 						"password: null, " +
 						"modules: [], " +
 						"escapeHtml: false, " +
@@ -381,7 +407,7 @@ class StandardOptionsTest {
 						"ignoreMinorErrors: false, " +
 						"coordFormat: null, " +
 						"dateFormat: null, " +
-						"charset: null, " +
+						"charsets: [], " +
 						"password: null, " +
 						"modules: [], " +
 						"escapeHtml: false, " +
