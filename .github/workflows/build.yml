@@ -67,4 +67,4 @@ jobs:
       - name: Test
         run: |
           ./mvnw -version
-          ./mvnw verify
+          ./mvnw -B --color always verify
