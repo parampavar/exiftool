@@ -51,18 +51,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v6.1.0
         with:
           gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
       - name: Set up JDK
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
-          java-version: 21
+          java-version: 25
           distribution: 'temurin'
           cache: 'maven'
           check-latest: true
@@ -81,6 +84,7 @@ jobs:
 
           # Environment variable name for the GPG private key passphrase.
           gpg-passphrase: GPG_PASSPHRASE
+
       - name: Configure Git
         run: |
           mkdir -p ~/.ssh
@@ -94,6 +98,7 @@ jobs:
           git config --global tag.gpgSign true
           git config user.email "mickael.jeanroy@gmail.com"
           git config user.name "Mickael Jeanroy"
+
       - name: Release
         run: |
           ./mvnw -B -U \
