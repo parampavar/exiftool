@@ -1,6 +1,6 @@
-/**
+/*
  * Copyright 2011 The Buzz Media, LLC
- * Copyright 2015-2019 Mickael Jeanroy
+ * Copyright 2015-2026 Mickael Jeanroy
  * Copyright 2019 David Edwards
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
