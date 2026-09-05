@@ -150,6 +150,9 @@ public final class ClassUtils {
 		}
 	}
 
+	/**
+	 * Thrown during reflection exceptions.
+	 */
 	public static class ReflectionException extends RuntimeException {
 		private ReflectionException(Throwable cause) {
 			super(cause);

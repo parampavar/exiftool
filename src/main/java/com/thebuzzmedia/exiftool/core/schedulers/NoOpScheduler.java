@@ -24,6 +24,12 @@ import com.thebuzzmedia.exiftool.Scheduler;
  */
 public class NoOpScheduler implements Scheduler {
 
+	/**
+	 * Create new {@link NoOpScheduler}.
+	 */
+	public NoOpScheduler() {
+	}
+
 	@Override
 	public void start(Runnable runnable) {
 		// No Op.

@@ -31,6 +31,12 @@ import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
  */
 public class AllTagHandler extends BaseTagHandler {
 
+	/**
+	 * Create new {@link AllTagHandler}
+	 */
+	public AllTagHandler() {
+	}
+
 	@Override
 	Tag toTag(String name) {
 		return new UnspecifiedTag(name);

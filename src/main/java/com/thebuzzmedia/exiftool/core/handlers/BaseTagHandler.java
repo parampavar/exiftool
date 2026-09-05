@@ -56,6 +56,12 @@ public abstract class BaseTagHandler implements TagHandler {
 	 */
 	private final Map<Tag, String> tags = new HashMap<>();
 
+	/**
+	 * Create new {@link BaseTagHandler}
+	 */
+	public BaseTagHandler() {
+	}
+
 	@Override
 	public boolean readLine(String line) {
 		// If line is null, then this is the end.
